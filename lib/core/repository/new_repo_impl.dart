@@ -15,13 +15,13 @@ class NewsRepoImpl implements NewsRepo {
   }
 
   @override
-  Future<List<Article>?> getNewsHeadling() async {
+  Future<NewsResponse?> getNewsHeadling(int page, int pageSize) async {
     // TODO: implement getNewsHeadling
     try {
-      final response =
-          await _httpService!.getRequest("/v2/top-headlines?country=us");
+      final response = await _httpService!.getRequest(
+          "/v2/top-headlines?country=us&page=$page&pageSize=$pageSize");
       final parseResponse = NewsResponse.fromJson(response.data);
-      return parseResponse.articles;
+      return parseResponse;
     } on Exception catch (e) {
       print(e);
       return null;
