@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:haber_sitesi/core/widget/drawer.dart';
 import 'package:haber_sitesi/feature/news_headline/controller/news_headline_controller.dart';
+import 'package:haber_sitesi/feature/news_headline/widgets/news_detail_screen.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NewsHeadLineView extends StatefulWidget {
@@ -12,56 +12,60 @@ class NewsHeadLineView extends StatefulWidget {
   State<NewsHeadLineView> createState() => _NewsHeadLineViewState();
 }
 
-class _NewsHeadLineViewState extends State<NewsHeadLineView> {
+class _NewsHeadLineViewState extends State<NewsHeadLineView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<NewsHeadlineController>();
     final RefreshController refreshController =
         RefreshController(initialRefresh: false);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("News Headline"),
-      ),
-      drawer: getAppDrawer(),
-      body: Obx(
-        () {
-          // return controller.isLoading.isTrue
-          //     ? const Center(
-          //         child: CircularProgressIndicator(),
-          //       )
-          //     :
-          return Container(
-            child: SmartRefresher(
-              controller: refreshController,
-              //default false oldugu ıcın asagı cekmeyı true yapmak gerekıyor
-              enablePullDown: true,
-              onRefresh: () async {
-                //refresh oldugunda yapılması gereken hereketler
-                final bool? result = await controller.loadNewsLine(
-                    isRefresh: true, refreshController: refreshController);
-                if (result == true) {
-                  //await Future.delayed(Duration(milliseconds: 1000));
-                  refreshController.refreshCompleted();
-                } else {
-                  refreshController.refreshFailed();
-                }
-              },
-              enablePullUp: true,
-              onLoading: () async {
-                final bool? result = await controller.loadNewsLine();
-                if (result == true) {
-                  //await Future.delayed(Duration(milliseconds: 1000));
-                  //setState(() {});
-                  refreshController.loadComplete();
-                } else {
-                  refreshController.loadFailed();
-                }
-              },
-              child: ListView.separated(
-                  itemBuilder: (_, i) {
-                    final controllerXd = controller.articles![i];
-                    return Card(
+    return Obx(
+      () {
+        // return controller.isLoading.isTrue
+        //     ? const Center(
+        //         child: CircularProgressIndicator(),
+        //       )
+        //     :
+        return Container(
+          child: SmartRefresher(
+            controller: refreshController,
+            //default false oldugu ıcın asagı cekmeyı true yapmak gerekıyor
+            enablePullDown: true,
+            onRefresh: () async {
+              //refresh oldugunda yapılması gereken hereketler
+              final bool? result = await controller.loadNewsLine(
+                  isRefresh: true, refreshController: refreshController);
+              if (result == true) {
+                //await Future.delayed(Duration(milliseconds: 1000));
+                refreshController.refreshCompleted();
+              } else {
+                refreshController.refreshFailed();
+              }
+            },
+            enablePullUp: true,
+            onLoading: () async {
+              final bool? result = await controller.loadNewsLine();
+              if (result == true) {
+                //await Future.delayed(Duration(milliseconds: 1000));
+                //setState(() {});
+                refreshController.loadComplete();
+              } else {
+                refreshController.loadFailed();
+              }
+            },
+            child: ListView.separated(
+                itemBuilder: (_, i) {
+                  final controllerXd = controller.articles![i];
+                  return GestureDetector(
+                    onTap: () {
+                      Get.to(NewsDetailScreen(), arguments: [
+                        {"imageUrl": controller.articles![i].urlToImage},
+                        {"title": controller.articles![i].title},
+                        {"description": controller.articles![i].description},
+                      ]);
+                    },
+                    child: Card(
                       elevation: 10,
                       child: Container(
                         margin: const EdgeInsets.symmetric(
@@ -111,16 +115,20 @@ class _NewsHeadLineViewState extends State<NewsHeadLineView> {
                           ],
                         ),
                       ),
-                    );
-                  },
-                  separatorBuilder: (_, i) {
-                    return Divider();
-                  },
-                  itemCount: controller.articles!.length),
-            ),
-          );
-        },
-      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (_, i) {
+                  return Divider();
+                },
+                itemCount: controller.articles!.length),
+          ),
+        );
+      },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

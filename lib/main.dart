@@ -5,6 +5,8 @@ import 'package:haber_sitesi/feature/search_news/binding/search_news_binding.dar
 
 import 'feature/news_headline/view/news_headling_view.dart';
 import 'feature/search_news/view/search_news_view.dart';
+import 'feature/tab_bar/binding/tab_bar_binding.dart';
+import 'feature/tab_bar/view/tab_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,9 +19,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       getPages: [
@@ -33,8 +36,13 @@ class MyApp extends StatelessWidget {
           page: () => SearchNewsView(),
           binding: SearchNewsBinding(),
         ),
+        GetPage(
+          name: '/tabbar_news',
+          page: () => MyTabbedWidget(),
+          binding: TabBarBinding(),
+        ),
       ],
-      initialRoute: "/news_headline",
+      initialRoute: "/tabbar_news",
     );
   }
 }
